@@ -2,6 +2,8 @@ import { Topbar } from "@/components/topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatPercent } from "@/lib/utils";
+import { AllocationDonut } from "@/components/allocation-donut";
+import { FadeIn } from "@/components/fade-in";
 
 const portfolio = [
   { ticker: "VOO", name: "Vanguard S&P 500 ETF", shares: 42.1, price: 577.3, change: 1.8, allocation: 36 },
@@ -18,17 +20,32 @@ export default function InvestingPage() {
     <>
       <Topbar title="Investing" subtitle="Your portfolio, performance, and allocation." />
       <div className="p-6 md:p-8 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Portfolio Value</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-mono font-semibold tracking-tight">
-              {formatCurrency(totalValue)}
-            </p>
-            <p className="text-sm text-success mt-1 font-mono">+1.94% today</p>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <FadeIn className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio Value</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-mono font-semibold tracking-tight">
+                  {formatCurrency(totalValue)}
+                </p>
+                <p className="text-sm text-success mt-1 font-mono">+1.94% today</p>
+              </CardContent>
+            </Card>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Allocation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AllocationDonut data={portfolio} />
+              </CardContent>
+            </Card>
+          </FadeIn>
+        </div>
 
         <Card>
           <CardHeader>
