@@ -1,6 +1,7 @@
 import { Topbar } from "@/components/topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FadeIn } from "@/components/fade-in";
 
 const stocks = [
   {
@@ -37,20 +38,22 @@ export default function ResearchPage() {
     <>
       <Topbar title="Research" subtitle="AI-assisted equity and fund analysis." />
       <div className="p-6 md:p-8 space-y-4">
-        {stocks.map((s) => (
-          <Card key={s.ticker}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-text-primary text-base font-medium">
-                <span className="font-mono text-gold">{s.ticker}</span>
-                <span className="text-text-secondary text-sm">{s.name}</span>
-              </CardTitle>
-              <Badge variant={ratingVariant[s.rating] ?? "neutral"}>{s.rating}</Badge>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-text-secondary leading-relaxed">{s.summary}</p>
-              <p className="text-xs font-mono text-text-secondary mt-3">P/E {s.pe}</p>
-            </CardContent>
-          </Card>
+        {stocks.map((s, idx) => (
+          <FadeIn key={s.ticker} delay={idx * 0.07}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-text-primary text-base font-medium">
+                  <span className="font-mono text-gold">{s.ticker}</span>
+                  <span className="text-text-secondary text-sm">{s.name}</span>
+                </CardTitle>
+                <Badge variant={ratingVariant[s.rating] ?? "neutral"}>{s.rating}</Badge>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-text-secondary leading-relaxed">{s.summary}</p>
+                <p className="text-xs font-mono text-text-secondary mt-3">P/E {s.pe}</p>
+              </CardContent>
+            </Card>
+          </FadeIn>
         ))}
       </div>
     </>
