@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { navItems } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useUser();
 
   return (
     <aside className="hidden md:flex h-screen w-60 flex-col border-r border-border bg-background-secondary sticky top-0">
@@ -40,9 +42,14 @@ export function Sidebar() {
       </nav>
 
       <div className="px-3 pb-6">
-        <div className="rounded-lg border border-border bg-card px-3 py-3">
-          <p className="text-xs text-text-secondary">Signed in as</p>
-          <p className="text-sm font-medium truncate">Ethan Locke</p>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-3">
+          <UserButton />
+          <div className="min-w-0">
+            <p className="text-xs text-text-secondary">Signed in as</p>
+            <p className="text-sm font-medium truncate">
+              {user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "..."}
+            </p>
+          </div>
         </div>
       </div>
     </aside>

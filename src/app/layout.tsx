@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sidebar } from "@/components/sidebar";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,13 +13,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <div className="flex-1 min-w-0">{children}</div>
-        </div>
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#d4af37",
+          colorBackground: "#09090b",
+          borderRadius: "0.5rem",
+        },
+      }}
+    >
+      <html lang="en">
+        <body className="antialiased">{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }

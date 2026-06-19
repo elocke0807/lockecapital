@@ -5,18 +5,13 @@ import { formatCurrency, formatPercent } from "@/lib/utils";
 import { ArrowUpRight, ArrowDownRight, Sparkles } from "lucide-react";
 import { NetWorthChart } from "@/components/net-worth-chart";
 import { FadeIn } from "@/components/fade-in";
+import { GoalsCard } from "@/components/goals-card";
 
 const snapshot = [
   { label: "Net Worth", value: 84230.12, change: 2.4 },
   { label: "Cash", value: 12450.0, change: 0.1 },
   { label: "Invested", value: 68120.55, change: 3.8 },
   { label: "Monthly Cash Flow", value: 1840.0, change: -4.2 },
-];
-
-const goals = [
-  { name: "Emergency Fund", progress: 82, target: 15000 },
-  { name: "Down Payment", progress: 34, target: 60000 },
-  { name: "Roth IRA Max", progress: 61, target: 7000 },
 ];
 
 const holdings = [
@@ -96,27 +91,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Goals</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {goals.map((g) => (
-                <div key={g.name}>
-                  <div className="flex items-center justify-between text-sm mb-1.5">
-                    <span>{g.name}</span>
-                    <span className="text-text-secondary font-mono text-xs">{g.progress}%</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gold"
-                      style={{ width: `${g.progress}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          <GoalsCard />
         </div>
 
         <Card className="border-gold/30 bg-gradient-to-br from-card to-background-secondary">
