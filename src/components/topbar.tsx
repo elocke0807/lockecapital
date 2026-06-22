@@ -1,4 +1,7 @@
+"use client";
+
 import { Bell, Search } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 
 export function Topbar({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
@@ -14,9 +17,7 @@ export function Topbar({ title, subtitle }: { title: string; subtitle?: string }
         <button className="h-9 w-9 rounded-lg border border-border bg-card flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors">
           <Bell className="h-4 w-4" />
         </button>
-        <div className="h-9 w-9 rounded-full bg-gold/90 flex items-center justify-center text-black text-sm font-mono font-semibold">
-          EL
-        </div>
+        <UserButton />
       </div>
     </header>
   );

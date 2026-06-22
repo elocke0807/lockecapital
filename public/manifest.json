@@ -1,0 +1,17 @@
+{
+  "name": "Locke Capital AI",
+  "short_name": "Locke Capital",
+  "description": "The AI-powered financial operating system for wealth builders.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
