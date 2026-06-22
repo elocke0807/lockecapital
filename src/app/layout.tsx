@@ -44,6 +44,8 @@ export default function RootLayout({
         },
         elements: {
           card: "shadow-2xl border border-[#27272a]",
+          socialButtonsBlockButtonText: "text-white",
+          socialButtonsBlockButton: "border border-[#27272a]",
         },
       }}
     >
