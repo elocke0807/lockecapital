@@ -14,7 +14,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex h-screen w-60 flex-col border-r border-border bg-background-secondary sticky top-0">
       <div className="flex items-center gap-2 px-6 py-6">
-        <Image src="/logo-mark.png" alt="" width={1254} height={1254} className="h-7 w-7 rounded" />
+        <Image src="/logo-mark-light.png" alt="" width={1024} height={1024} className="h-10 w-10 rounded-md" />
         <span className="text-base font-semibold tracking-tight">Locke Capital</span>
       </div>
 
