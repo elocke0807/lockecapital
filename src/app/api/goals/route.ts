@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, target_amount, current_amount } = await req.json();
+  const { name, target_amount, current_amount, target_date } = await req.json();
   if (!name || !target_amount) {
     return NextResponse.json({ error: "name and target_amount are required" }, { status: 400 });
   }
@@ -29,7 +29,13 @@ export async function POST(req: NextRequest) {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from("goals")
-    .insert({ user_id: userId, name, target_amount, current_amount: current_amount ?? 0 })
+    .insert({
+      user_id: userId,
+      name,
+      target_amount,
+      current_amount: current_amount ?? 0,
+      target_date: target_date ?? null,
+    })
     .select()
     .single();
 

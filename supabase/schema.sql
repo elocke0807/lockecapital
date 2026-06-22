@@ -4,8 +4,11 @@ create table if not exists goals (
   name text not null,
   target_amount numeric not null,
   current_amount numeric not null default 0,
+  target_date date,
   created_at timestamptz not null default now()
 );
+
+alter table goals add column if not exists target_date date;
 
 alter table goals enable row level security;
 
