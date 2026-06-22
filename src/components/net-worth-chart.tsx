@@ -3,18 +3,19 @@
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 
-const data = [
-  { month: "Jan", value: 71200 },
-  { month: "Feb", value: 73850 },
-  { month: "Mar", value: 72980 },
-  { month: "Apr", value: 76410 },
-  { month: "May", value: 79220 },
-  { month: "Jun", value: 78540 },
-  { month: "Jul", value: 81100 },
-  { month: "Aug", value: 84230 },
-];
+interface NetWorthChartProps {
+  data: { month: string; value: number }[];
+}
 
-export function NetWorthChart() {
+export function NetWorthChart({ data }: NetWorthChartProps) {
+  if (data.length === 0) {
+    return (
+      <div className="flex h-[220px] items-center justify-center text-sm text-text-secondary">
+        Add an account to start tracking your net worth.
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={220}>
       <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>

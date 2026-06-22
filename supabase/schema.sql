@@ -103,3 +103,53 @@ create policy "Users can update their own budgets"
 create policy "Users can delete their own budgets"
   on budgets for delete
   using (user_id = auth.jwt()->>'sub');
+
+create table if not exists accounts (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  name text not null,
+  type text not null check (type in ('cash', 'investment', 'other')),
+  balance numeric not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table accounts enable row level security;
+
+create policy "Users can view their own accounts"
+  on accounts for select
+  using (user_id = auth.jwt()->>'sub');
+
+create policy "Users can insert their own accounts"
+  on accounts for insert
+  with check (user_id = auth.jwt()->>'sub');
+
+create policy "Users can update their own accounts"
+  on accounts for update
+  using (user_id = auth.jwt()->>'sub');
+
+create policy "Users can delete their own accounts"
+  on accounts for delete
+  using (user_id = auth.jwt()->>'sub');
+
+create table if not exists net_worth_snapshots (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  snapshot_date date not null,
+  total numeric not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, snapshot_date)
+);
+
+alter table net_worth_snapshots enable row level security;
+
+create policy "Users can view their own snapshots"
+  on net_worth_snapshots for select
+  using (user_id = auth.jwt()->>'sub');
+
+create policy "Users can insert their own snapshots"
+  on net_worth_snapshots for insert
+  with check (user_id = auth.jwt()->>'sub');
+
+create policy "Users can update their own snapshots"
+  on net_worth_snapshots for update
+  using (user_id = auth.jwt()->>'sub');

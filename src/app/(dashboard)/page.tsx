@@ -2,17 +2,10 @@ import { Topbar } from "@/components/topbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatPercent } from "@/lib/utils";
-import { ArrowUpRight, ArrowDownRight, Sparkles } from "lucide-react";
-import { NetWorthChart } from "@/components/net-worth-chart";
+import { Sparkles } from "lucide-react";
 import { FadeIn } from "@/components/fade-in";
 import { GoalsCard } from "@/components/goals-card";
-
-const snapshot = [
-  { label: "Net Worth", value: 84230.12, change: 2.4 },
-  { label: "Cash", value: 12450.0, change: 0.1 },
-  { label: "Invested", value: 68120.55, change: 3.8 },
-  { label: "Monthly Cash Flow", value: 1840.0, change: -4.2 },
-];
+import { NetWorthOverview } from "@/components/net-worth-overview";
 
 const holdings = [
   { ticker: "VOO", name: "Vanguard S&P 500", value: 24310.2, change: 1.8 },
@@ -25,44 +18,8 @@ export default function DashboardPage() {
     <>
       <Topbar title="Dashboard" subtitle="Your financial snapshot, today." />
       <div className="p-6 md:p-8 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {snapshot.map((item, i) => (
-            <FadeIn key={item.label} delay={i * 0.05}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{item.label}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-mono font-semibold tracking-tight">
-                    {formatCurrency(item.value)}
-                  </p>
-                  <div
-                    className={`mt-2 flex items-center gap-1 text-xs font-mono ${
-                      item.change >= 0 ? "text-success" : "text-danger"
-                    }`}
-                  >
-                    {item.change >= 0 ? (
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    ) : (
-                      <ArrowDownRight className="h-3.5 w-3.5" />
-                    )}
-                    {formatPercent(item.change)} this month
-                  </div>
-                </CardContent>
-              </Card>
-            </FadeIn>
-          ))}
-        </div>
-
-        <FadeIn delay={0.15}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Net Worth Trend</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <NetWorthChart />
-            </CardContent>
-          </Card>
+        <FadeIn>
+          <NetWorthOverview />
         </FadeIn>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
