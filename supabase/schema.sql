@@ -181,3 +181,18 @@ create policy "Users can update their own holdings"
 create policy "Users can delete their own holdings"
   on holdings for delete
   using (user_id = auth.jwt()->>'sub');
+
+create table if not exists market_snapshots (
+  id uuid primary key default gen_random_uuid(),
+  symbol text not null,
+  snapshot_date date not null,
+  value numeric not null,
+  created_at timestamptz not null default now(),
+  unique (symbol, snapshot_date)
+);
+
+alter table market_snapshots enable row level security;
+
+create policy "Anyone can view market snapshots"
+  on market_snapshots for select
+  using (true);
