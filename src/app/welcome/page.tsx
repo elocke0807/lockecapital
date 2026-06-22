@@ -17,12 +17,12 @@ export default function WelcomePage() {
       />
       <div className="relative z-10 flex flex-col items-center">
         <Image
-          src="/logo-full.png"
+          src="/logo-full-light-text.png"
           alt="Locke Capital AI"
-          width={1254}
-          height={1254}
+          width={1536}
+          height={1024}
           quality={100}
-          className="mb-10 h-56 w-56 md:h-72 md:w-72 drop-shadow-[0_0_60px_rgba(212,175,55,0.18)]"
+          className="mb-8 h-40 w-auto md:h-56 drop-shadow-[0_0_50px_rgba(212,175,55,0.2)]"
           priority
         />
         <h1
