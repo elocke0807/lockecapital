@@ -7,41 +7,36 @@ Be concise, concrete, and speak like a trusted private CFO — confident, never 
 export async function POST(req: NextRequest) {
   const { message, context } = await req.json();
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({
       reply:
-        "AI CFO is running in demo mode. Set ANTHROPIC_API_KEY to enable live, personalized answers grounded in your account data.",
+        "AI CFO is running in demo mode. Set GEMINI_API_KEY to enable live, personalized answers grounded in your account data.",
     });
   }
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 600,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: context
-            ? `Financial context:\n${JSON.stringify(context)}\n\nQuestion: ${message}`
-            : message,
-        },
-      ],
-    }),
-  });
+  const prompt = context
+    ? `Financial context:\n${JSON.stringify(context)}\n\nQuestion: ${message}`
+    : message;
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 600 },
+      }),
+    }
+  );
 
   if (!res.ok) {
     return NextResponse.json({ reply: "The AI CFO is temporarily unavailable. Please try again." }, { status: 502 });
   }
 
   const data = await res.json();
-  const reply = data?.content?.[0]?.text ?? "I couldn't generate a response.";
+  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "I couldn't generate a response.";
   return NextResponse.json({ reply });
 }
