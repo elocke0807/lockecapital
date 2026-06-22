@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
+import { PlaidLinkButton } from "@/components/plaid-link-button";
 
 interface Account {
   id: string;
@@ -114,9 +115,10 @@ export function ConnectedAccountsCard() {
           </div>
         ) : (
           <Button variant="secondary" className="w-full mt-2" onClick={() => setAdding(true)}>
-            + Connect a new account
+            + Add account manually
           </Button>
         )}
+        <PlaidLinkButton onLinked={load} />
       </CardContent>
     </Card>
   );

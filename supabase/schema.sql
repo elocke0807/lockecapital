@@ -182,6 +182,34 @@ create policy "Users can delete their own holdings"
   on holdings for delete
   using (user_id = auth.jwt()->>'sub');
 
+alter table accounts add column if not exists plaid_account_id text;
+alter table accounts add column if not exists plaid_item_id text;
+alter table holdings add column if not exists plaid_account_id text;
+alter table holdings add column if not exists plaid_item_id text;
+
+create table if not exists plaid_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  item_id text not null unique,
+  access_token text not null,
+  institution_name text,
+  created_at timestamptz not null default now()
+);
+
+alter table plaid_items enable row level security;
+
+create policy "Users can view their own plaid items"
+  on plaid_items for select
+  using (user_id = auth.jwt()->>'sub');
+
+create policy "Users can insert their own plaid items"
+  on plaid_items for insert
+  with check (user_id = auth.jwt()->>'sub');
+
+create policy "Users can delete their own plaid items"
+  on plaid_items for delete
+  using (user_id = auth.jwt()->>'sub');
+
 create table if not exists market_snapshots (
   id uuid primary key default gen_random_uuid(),
   symbol text not null,
