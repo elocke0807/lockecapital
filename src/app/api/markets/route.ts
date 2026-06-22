@@ -46,7 +46,7 @@ export async function GET() {
 
         return {
           name,
-          value: current.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+          value: current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
           change: Math.round(change * 100) / 100,
           history: (history ?? []).map((h) => Number(h.value)).slice(-7),
         };
