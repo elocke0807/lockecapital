@@ -11,7 +11,12 @@ export function PlaidLinkButton({ onLinked }: { onLinked: () => void }) {
   useEffect(() => {
     fetch("/api/plaid/create-link-token", { method: "POST" })
       .then((res) => (res.ok ? res.json() : null))
-      .then((data) => data && setLinkToken(data.link_token));
+      .then((data) => {
+        if (data?.link_token) {
+          setLinkToken(data.link_token);
+          sessionStorage.setItem("plaid_link_token", data.link_token);
+        }
+      });
   }, []);
 
   const onSuccess = useCallback(
