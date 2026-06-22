@@ -6,11 +6,11 @@ export default function WelcomePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-center">
       <Image
-        src="/logo-full.svg"
+        src="/logo-full.png"
         alt="Locke Capital AI"
-        width={240}
-        height={64}
-        className="mb-8 h-16 w-auto"
+        width={1254}
+        height={1254}
+        className="mb-8 h-40 w-40 md:h-48 md:w-48"
         priority
       />
       <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-text-primary max-w-2xl">

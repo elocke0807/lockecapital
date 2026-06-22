@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: "Locke Capital AI",
   description: "The AI-powered financial operating system for wealth builders.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/logo-mark.png",
+    apple: "/logo-mark.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
