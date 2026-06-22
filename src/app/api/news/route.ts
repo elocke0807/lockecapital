@@ -1,29 +1,28 @@
 import { NextResponse } from "next/server";
 
-const FEED_URL = "https://feeds.content.dowjones.io/public/rss/mw_topstories";
-
 export async function GET() {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) return NextResponse.json({ news: [] });
+
   try {
-    const res = await fetch(FEED_URL, {
+    const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${apiKey}`, {
       cache: "no-store",
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
     });
     if (!res.ok) throw new Error("fetch failed");
-    const xml = await res.text();
+    const data = await res.json();
 
-    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 8).map((match) => {
-      const block = match[1];
-      const title = block.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, "").trim() ?? "Untitled";
-      const pubDate = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim();
-      return {
-        headline: title,
-        source: "MarketWatch",
-        time: pubDate ? new Date(pubDate).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "",
-      };
-    });
+    const items = (Array.isArray(data) ? data : []).slice(0, 8).map((item: { headline: string; source: string; datetime: number }) => ({
+      headline: item.headline,
+      source: item.source,
+      time: item.datetime
+        ? new Date(item.datetime * 1000).toLocaleString(undefined, {
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : "",
+    }));
 
     return NextResponse.json({ news: items });
   } catch {

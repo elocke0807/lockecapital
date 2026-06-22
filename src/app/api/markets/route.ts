@@ -1,50 +1,36 @@
 import { NextResponse } from "next/server";
 
 const SYMBOLS = [
-  { symbol: "^spx", name: "S&P 500" },
-  { symbol: "^ndq", name: "Nasdaq" },
-  { symbol: "^dji", name: "Dow Jones" },
-  { symbol: "10usy.b", name: "10Y Treasury" },
+  { symbol: "SPY", name: "S&P 500 (SPY)" },
+  { symbol: "QQQ", name: "Nasdaq (QQQ)" },
+  { symbol: "DIA", name: "Dow Jones (DIA)" },
+  { symbol: "IWM", name: "Russell 2000 (IWM)" },
 ];
 
-function parseCsv(csv: string) {
-  const lines = csv.trim().split("\n");
-  return lines.slice(1).map((line) => {
-    const parts = line.split(",");
-    return Number(parts[4]);
-  });
-}
-
 export async function GET() {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ indices: SYMBOLS.map((s) => ({ name: s.name, value: "N/A", change: 0, history: [] })) });
+  }
+
   const results = await Promise.all(
     SYMBOLS.map(async ({ symbol, name }) => {
       try {
         const res = await fetch(
-          `https://stooq.com/q/d/l/?s=${encodeURIComponent(symbol)}&i=d`,
-          {
-            cache: "no-store",
-            headers: {
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            },
-          }
+          `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`,
+          { cache: "no-store" }
         );
         if (!res.ok) throw new Error("fetch failed");
-        const csv = await res.text();
-        if (csv.trim().toLowerCase().startsWith("<!doctype") || csv.includes("Exceeded")) {
-          throw new Error("blocked or rate-limited");
-        }
-        const closes = parseCsv(csv).filter((n) => !Number.isNaN(n));
-        const history = closes.slice(-7);
-        const latest = history[history.length - 1];
-        const prior = history[history.length - 2];
-        const change = prior ? ((latest - prior) / prior) * 100 : 0;
-        const isYield = symbol.includes("usy");
+        const data = await res.json();
+        const current = data.c;
+        const prevClose = data.pc;
+        if (!current || !prevClose) throw new Error("no data");
+        const change = ((current - prevClose) / prevClose) * 100;
         return {
           name,
-          value: isYield ? `${latest.toFixed(2)}%` : latest.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+          value: current.toLocaleString(undefined, { maximumFractionDigits: 2 }),
           change: Math.round(change * 100) / 100,
-          history,
+          history: [] as number[],
         };
       } catch {
         return { name, value: "N/A", change: 0, history: [] };
