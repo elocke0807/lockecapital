@@ -1,6 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-600.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-700.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
+  --font-playfair: "Playfair Display", Georgia, serif;
   --background: #09090b;
   --background-secondary: #111113;
   --card: #18181b;
