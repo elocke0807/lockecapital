@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser, UserButton } from "@clerk/nextjs";
@@ -13,9 +14,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex h-screen w-60 flex-col border-r border-border bg-background-secondary sticky top-0">
       <div className="flex items-center gap-2 px-6 py-6">
-        <div className="h-7 w-7 rounded-md bg-gold flex items-center justify-center text-black font-mono text-sm font-bold">
-          L
-        </div>
+        <Image src="/logo-mark.svg" alt="" width={28} height={28} className="h-7 w-7" />
         <span className="text-base font-semibold tracking-tight">Locke Capital</span>
       </div>
 
