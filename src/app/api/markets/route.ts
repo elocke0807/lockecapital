@@ -10,8 +10,8 @@ const SYMBOLS = [
 function parseCsv(csv: string) {
   const lines = csv.trim().split("\n");
   return lines.slice(1).map((line) => {
-    const [, , close] = line.split(",");
-    return Number(close);
+    const parts = line.split(",");
+    return Number(parts[4]);
   });
 }
 
@@ -21,10 +21,19 @@ export async function GET() {
       try {
         const res = await fetch(
           `https://stooq.com/q/d/l/?s=${encodeURIComponent(symbol)}&i=d`,
-          { cache: "no-store" }
+          {
+            cache: "no-store",
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
+          }
         );
         if (!res.ok) throw new Error("fetch failed");
         const csv = await res.text();
+        if (csv.trim().toLowerCase().startsWith("<!doctype") || csv.includes("Exceeded")) {
+          throw new Error("blocked or rate-limited");
+        }
         const closes = parseCsv(csv).filter((n) => !Number.isNaN(n));
         const history = closes.slice(-7);
         const latest = history[history.length - 1];

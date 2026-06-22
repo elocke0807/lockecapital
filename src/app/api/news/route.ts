@@ -4,7 +4,13 @@ const FEED_URL = "https://feeds.content.dowjones.io/public/rss/mw_topstories";
 
 export async function GET() {
   try {
-    const res = await fetch(FEED_URL, { cache: "no-store" });
+    const res = await fetch(FEED_URL, {
+      cache: "no-store",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    });
     if (!res.ok) throw new Error("fetch failed");
     const xml = await res.text();
 
