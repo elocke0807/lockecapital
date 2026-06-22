@@ -153,3 +153,31 @@ create policy "Users can insert their own snapshots"
 create policy "Users can update their own snapshots"
   on net_worth_snapshots for update
   using (user_id = auth.jwt()->>'sub');
+
+create table if not exists holdings (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  ticker text not null,
+  name text not null,
+  shares numeric not null,
+  price numeric not null,
+  created_at timestamptz not null default now()
+);
+
+alter table holdings enable row level security;
+
+create policy "Users can view their own holdings"
+  on holdings for select
+  using (user_id = auth.jwt()->>'sub');
+
+create policy "Users can insert their own holdings"
+  on holdings for insert
+  with check (user_id = auth.jwt()->>'sub');
+
+create policy "Users can update their own holdings"
+  on holdings for update
+  using (user_id = auth.jwt()->>'sub');
+
+create policy "Users can delete their own holdings"
+  on holdings for delete
+  using (user_id = auth.jwt()->>'sub');
