@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.7",
+    "@clerk/themes": "^2.4.57",
     "@radix-ui/react-avatar": "^1.2.0",
     "@radix-ui/react-dialog": "^1.1.17",
     "@radix-ui/react-separator": "^1.1.10",

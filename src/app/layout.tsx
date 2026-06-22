@@ -34,8 +34,16 @@ export default function RootLayout({
       appearance={{
         variables: {
           colorPrimary: "#d4af37",
-          colorBackground: "#09090b",
+          colorBackground: "#18181b",
+          colorInput: "#0c0c0c",
+          colorInputForeground: "#fafafa",
+          colorForeground: "#fafafa",
+          colorMutedForeground: "#a1a1aa",
+          colorBorder: "#27272a",
           borderRadius: "0.5rem",
+        },
+        elements: {
+          card: "shadow-2xl border border-[#27272a]",
         },
       }}
     >
