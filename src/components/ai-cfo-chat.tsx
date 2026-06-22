@@ -18,16 +18,93 @@ const suggestions = [
   "How is my portfolio allocated right now?",
 ];
 
-const financialContext = {
-  netWorth: 84230.12,
-  cash: 12450.0,
-  invested: 68120.55,
-  monthlyCashFlow: 1840.0,
-  goals: [
-    { name: "Emergency Fund", progress: 82, target: 15000 },
-    { name: "Down Payment", progress: 34, target: 60000 },
-  ],
-};
+interface Account {
+  name: string;
+  type: string;
+  balance: number;
+}
+interface Goal {
+  name: string;
+  target_amount: number;
+  current_amount: number;
+  target_date: string | null;
+}
+interface Holding {
+  ticker: string;
+  shares: number;
+  price: number;
+}
+interface Transaction {
+  type: "income" | "expense";
+  category: string;
+  amount: number;
+  occurred_on: string;
+}
+interface Paycheck {
+  gross: number;
+  taxes: number;
+  retirement_401k: number;
+  pay_date: string;
+}
+
+async function buildFinancialContext() {
+  const [accountsRes, goalsRes, holdingsRes, transactionsRes, paychecksRes] = await Promise.all([
+    fetch("/api/accounts").then((r) => r.json()),
+    fetch("/api/goals").then((r) => r.json()),
+    fetch("/api/holdings").then((r) => r.json()),
+    fetch("/api/transactions").then((r) => r.json()),
+    fetch("/api/paychecks").then((r) => r.json()),
+  ]);
+
+  const accounts: Account[] = accountsRes.accounts ?? [];
+  const goals: Goal[] = goalsRes.goals ?? [];
+  const holdings: Holding[] = holdingsRes.holdings ?? [];
+  const transactions: Transaction[] = transactionsRes.transactions ?? [];
+  const paychecks: Paycheck[] = paychecksRes.paychecks ?? [];
+
+  const cash = accounts.filter((a) => a.type === "cash").reduce((sum, a) => sum + Number(a.balance), 0);
+  const invested = accounts.filter((a) => a.type === "investment").reduce((sum, a) => sum + Number(a.balance), 0);
+  const other = accounts.filter((a) => a.type === "other").reduce((sum, a) => sum + Number(a.balance), 0);
+  const netWorth = cash + invested + other;
+
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0, 7);
+  const monthlyIncome = transactions
+    .filter((t) => t.type === "income" && t.occurred_on.startsWith(thisMonth))
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+  const monthlyExpenses = transactions
+    .filter((t) => t.type === "expense" && t.occurred_on.startsWith(thisMonth))
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+
+  return {
+    netWorth: Math.round(netWorth * 100) / 100,
+    cash: Math.round(cash * 100) / 100,
+    invested: Math.round(invested * 100) / 100,
+    monthlyIncome: Math.round(monthlyIncome * 100) / 100,
+    monthlyExpenses: Math.round(monthlyExpenses * 100) / 100,
+    monthlyCashFlow: Math.round((monthlyIncome - monthlyExpenses) * 100) / 100,
+    accounts: accounts.map((a) => ({ name: a.name, type: a.type, balance: Number(a.balance) })),
+    goals: goals.map((g) => ({
+      name: g.name,
+      currentAmount: Number(g.current_amount),
+      targetAmount: Number(g.target_amount),
+      targetDate: g.target_date,
+    })),
+    holdings: holdings.map((h) => ({
+      ticker: h.ticker,
+      shares: Number(h.shares),
+      value: Math.round(Number(h.shares) * Number(h.price) * 100) / 100,
+    })),
+    recentPaycheck: paychecks[0]
+      ? {
+          gross: Number(paychecks[0].gross),
+          taxes: Number(paychecks[0].taxes),
+          retirement401k: Number(paychecks[0].retirement_401k),
+          payDate: paychecks[0].pay_date,
+        }
+      : null,
+  };
+}
 
 export function AiCfoChat() {
   const [messages, setMessages] = useState<Message[]>([
@@ -53,10 +130,11 @@ export function AiCfoChat() {
     setLoading(true);
 
     try {
+      const context = await buildFinancialContext();
       const res = await fetch("/api/ai-cfo", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: text, context: financialContext }),
+        body: JSON.stringify({ message: text, context }),
       });
       const data = await res.json();
       setMessages([...next, { role: "assistant", content: data.reply }]);

@@ -9,7 +9,7 @@ async function askGemini(apiKey: string, systemPrompt: string, userPrompt: strin
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-        generationConfig: { maxOutputTokens: 800 },
+        generationConfig: { maxOutputTokens: 1000, thinkingConfig: { thinkingBudget: 0 } },
       }),
     }
   );

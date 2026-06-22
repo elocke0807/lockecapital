@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 600 },
+        generationConfig: { maxOutputTokens: 800, thinkingConfig: { thinkingBudget: 0 } },
       }),
     }
   );
