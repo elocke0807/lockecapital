@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { plaidClient } from "@/lib/plaid";
+import { decryptToken } from "@/lib/token-crypto";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth();
@@ -32,8 +34,43 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
   const { id } = await params;
   const supabase = getSupabaseServerClient();
-  const { error } = await supabase.from("accounts").delete().eq("id", id).eq("user_id", userId);
 
+  const { data: account } = await supabase
+    .from("accounts")
+    .select("plaid_item_id")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const { error } = await supabase.from("accounts").delete().eq("id", id).eq("user_id", userId);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (account?.plaid_item_id) {
+    const { count } = await supabase
+      .from("accounts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("plaid_item_id", account.plaid_item_id);
+
+    if (!count) {
+      const { data: item } = await supabase
+        .from("plaid_items")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("item_id", account.plaid_item_id)
+        .maybeSingle();
+
+      if (item) {
+        try {
+          await plaidClient.itemRemove({ access_token: decryptToken(item.access_token) });
+        } catch (err) {
+          console.error("Plaid itemRemove error", err);
+        }
+        await supabase.from("plaid_items").delete().eq("id", item.id);
+        await supabase.from("holdings").delete().eq("user_id", userId).eq("plaid_item_id", account.plaid_item_id);
+      }
+    }
+  }
+
   return NextResponse.json({ success: true });
 }

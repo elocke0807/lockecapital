@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { plaidClient } from "@/lib/plaid";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { decryptToken } from "@/lib/token-crypto";
 
 export async function POST() {
   const { userId } = await auth();
@@ -20,7 +21,8 @@ export async function POST() {
 
   for (const item of items) {
     try {
-      const accountsRes = await plaidClient.accountsGet({ access_token: item.access_token });
+      const accessToken = decryptToken(item.access_token);
+      const accountsRes = await plaidClient.accountsGet({ access_token: accessToken });
 
       for (const acct of accountsRes.data.accounts) {
         const type = acct.type === "investment" ? "investment" : acct.type === "depository" ? "cash" : "other";
@@ -49,7 +51,7 @@ export async function POST() {
       }
 
       try {
-        const holdingsRes = await plaidClient.investmentsHoldingsGet({ access_token: item.access_token });
+        const holdingsRes = await plaidClient.investmentsHoldingsGet({ access_token: accessToken });
         const securitiesById = new Map(holdingsRes.data.securities.map((s) => [s.security_id, s]));
 
         for (const h of holdingsRes.data.holdings) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { plaidClient } from "@/lib/plaid";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
+import { encryptToken } from "@/lib/token-crypto";
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
     const { error: itemError } = await supabase.from("plaid_items").insert({
       user_id: userId,
       item_id: itemId,
-      access_token: accessToken,
+      access_token: encryptToken(accessToken),
       institution_name: institutionName,
     });
     if (itemError) return NextResponse.json({ error: itemError.message }, { status: 500 });

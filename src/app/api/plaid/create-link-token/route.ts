@@ -19,9 +19,6 @@ export async function POST() {
   } catch (err) {
     const plaidError = (err as { response?: { data?: unknown } })?.response?.data;
     console.error("Plaid create-link-token error", JSON.stringify(plaidError ?? err));
-    return NextResponse.json(
-      { error: "Failed to create link token", details: plaidError },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create link token" }, { status: 500 });
   }
 }
