@@ -22,7 +22,8 @@ export default function WelcomePage() {
           width={1536}
           height={1024}
           quality={100}
-          className="mb-8 h-40 w-auto md:h-56 drop-shadow-[0_0_50px_rgba(212,175,55,0.2)]"
+          unoptimized
+          className="mb-8 h-56 w-auto md:h-80 lg:h-96 drop-shadow-[0_0_70px_rgba(212,175,55,0.22)]"
           priority
         />
         <h1
